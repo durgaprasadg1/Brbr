@@ -26,7 +26,6 @@ CREATE TABLE shops (
     closing_time TIME NOT NULL,
     is_opened BOOLEAN NOT NULL DEFAULT FALSE,
     average_rating DECIMAL(2,1) NOT NULL DEFAULT 0.0,
-    total_ratings INT NOT NULL DEFAULT 0,
     status ENUM('PENDING','ACTIVE','REJECTED','DISABLED') NOT NULL DEFAULT 'PENDING',
     rejection_reason TEXT NULL,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
