@@ -1,5 +1,7 @@
 const pool = require("../../config/db");
-const { sendOtp } = require("./otp.service");
+
+const { sendOtp, verifyOtp } = require("./otp.service");
+const { generateToken } = require("../../../utils/jwt");
 
 async function registerUser(name, phone, role = "CUSTOMER") {
   // Check if user already exists
@@ -40,11 +42,6 @@ async function registerUser(name, phone, role = "CUSTOMER") {
     userId: result.insertId,
   };
 }
-
-module.exports = {
-  registerUser,
-};
-const { verifyOtp } = require("./otp.service");
 
 async function verifyRegistrationOtp(phone, otp) {
   // Verify OTP
@@ -97,3 +94,98 @@ async function verifyRegistrationOtp(phone, otp) {
     },
   };
 }
+
+async function requestLoginOtp(phone) {
+  // Find user
+  const [users] = await pool.execute(
+    `SELECT id, name, phone, role, is_verified, is_active, is_deleted
+     FROM users
+     WHERE phone = ?
+     LIMIT 1`,
+    [phone]
+  );
+
+  if (users.length === 0) {
+    throw new Error("User not found");
+  }
+
+  const user = users[0];
+
+  // Check account status
+  if (user.is_deleted) {
+    throw new Error("User account has been deleted");
+  }
+
+  if (!user.is_active) {
+    throw new Error("User account is inactive");
+  }
+
+  if (!user.is_verified) {
+    throw new Error("User is not verified");
+  }
+
+  // Send login OTP
+  sendOtp(phone);
+
+  return {
+    message: "Login OTP sent successfully",
+  };
+}
+
+async function verifyLoginOtp(phone, otp) {
+  // Verify OTP
+  const otpResult = verifyOtp(phone, otp);
+
+  if (!otpResult.success) {
+    throw new Error(otpResult.message);
+  }
+
+  // Find user
+  const [users] = await pool.execute(
+    `SELECT id, name, phone, role, is_verified, is_active, is_deleted
+     FROM users
+     WHERE phone = ?
+     LIMIT 1`,
+    [phone]
+  );
+
+  if (users.length === 0) {
+    throw new Error("User not found");
+  }
+
+  const user = users[0];
+
+  // Check account status
+  if (user.is_deleted) {
+    throw new Error("User account has been deleted");
+  }
+
+  if (!user.is_active) {
+    throw new Error("User account is inactive");
+  }
+
+  if (!user.is_verified) {
+    throw new Error("User is not verified");
+  }
+
+  // Generate JWT
+  const token = generateToken(user);
+
+  return {
+    message: "Login successful",
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      phone: user.phone,
+      role: user.role,
+    },
+  };
+}
+
+module.exports = {
+  registerUser,
+  verifyRegistrationOtp,
+  requestLoginOtp,
+  verifyLoginOtp,
+};
