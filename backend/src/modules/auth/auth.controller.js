@@ -5,11 +5,22 @@ const {
   verifyLoginOtp,
 } = require("./auth.service");
 
+const {
+  registerSchema,
+  verifyOtpSchema,
+  loginSchema,
+  verifyLoginSchema,
+} = require("./auth.validation");
+
 async function register(req, res) {
   try {
-    const { name, phone, role } = req.body;
+    const data = registerSchema.parse(req.body);
 
-    const result = await registerUser(name, phone, role);
+    const result = await registerUser(
+      data.name,
+      data.email,
+      data.role
+    );
 
     return res.status(201).json({
       success: true,
@@ -25,9 +36,12 @@ async function register(req, res) {
 
 async function verifyOtp(req, res) {
   try {
-    const { phone, otp } = req.body;
+    const data = verifyOtpSchema.parse(req.body);
 
-    const result = await verifyRegistrationOtp(phone, otp);
+    const result = await verifyRegistrationOtp(
+      data.email,
+      data.otp
+    );
 
     return res.status(200).json({
       success: true,
@@ -43,9 +57,11 @@ async function verifyOtp(req, res) {
 
 async function login(req, res) {
   try {
-    const { phone } = req.body;
+    const data = loginSchema.parse(req.body);
 
-    const result = await requestLoginOtp(phone);
+    const result = await requestLoginOtp(
+      data.email
+    );
 
     return res.status(200).json({
       success: true,
@@ -61,9 +77,12 @@ async function login(req, res) {
 
 async function verifyLogin(req, res) {
   try {
-    const { phone, otp } = req.body;
+    const data = verifyLoginSchema.parse(req.body);
 
-    const result = await verifyLoginOtp(phone, otp);
+    const result = await verifyLoginOtp(
+      data.email,
+      data.otp
+    );
 
     res.cookie("token", result.token, {
       httpOnly: true,

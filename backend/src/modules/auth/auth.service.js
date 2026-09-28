@@ -3,11 +3,19 @@ const pool = require("../../config/db");
 const { sendOtp, verifyOtp } = require("./otp.service");
 const { generateToken } = require("../../../utils/jwt");
 
-async function registerUser(name, phone, role = "CUSTOMER") {
-  // Check if user already exists
+async function registerUser(name, email, role = "CUSTOMER") {
+  if (!["CUSTOMER", "OWNER"].includes(role)) {
+    throw new Error("Invalid registration role");
+  }
+
+  // Check if email already exists
+ 
   const [existingUsers] = await pool.execute(
-    "SELECT id, is_verified FROM users WHERE phone = ? LIMIT 1",
-    [phone]
+    `SELECT id, name, email, role, is_verified
+     FROM users
+     WHERE email = ?
+     LIMIT 1`,
+    [email]
   );
 
   if (existingUsers.length > 0) {
@@ -18,10 +26,10 @@ async function registerUser(name, phone, role = "CUSTOMER") {
     }
 
     // Existing but not verified → resend OTP
-    sendOtp(phone);
+    await sendOtp(email);
 
     return {
-      message: "OTP resent successfully",
+      message: "OTP resent successfully to your email",
       userId: existingUser.id,
     };
   }
@@ -29,35 +37,32 @@ async function registerUser(name, phone, role = "CUSTOMER") {
   // Create new unverified user
   const [result] = await pool.execute(
     `INSERT INTO users
-      (name, phone, role, is_verified, is_active, is_deleted, created_at, updated_at)
+      (name, email, role, is_verified, is_active, is_deleted, created_at, updated_at)
      VALUES (?, ?, ?, FALSE, TRUE, FALSE, NOW(), NOW())`,
-    [name, phone, role]
+    [name, email, role]
   );
 
-  // Send OTP
-  sendOtp(phone);
+  await sendOtp(email);
 
   return {
-    message: "Registration successful. OTP sent.",
+    message: "Registration successful. OTP sent to your email.",
     userId: result.insertId,
   };
 }
 
-async function verifyRegistrationOtp(phone, otp) {
-  // Verify OTP
-  const otpResult = verifyOtp(phone, otp);
+async function verifyRegistrationOtp(email, otp) {
+  const otpResult = await verifyOtp(email, otp);
 
   if (!otpResult.success) {
     throw new Error(otpResult.message);
   }
 
-  // Check user
   const [users] = await pool.execute(
-    `SELECT id, name, phone, role, is_verified, is_active, is_deleted
+    `SELECT id, name, email, role, is_verified, is_active, is_deleted
      FROM users
-     WHERE phone = ?
+     WHERE email = ?
      LIMIT 1`,
-    [phone]
+    [email]
   );
 
   if (users.length === 0) {
@@ -74,13 +79,12 @@ async function verifyRegistrationOtp(phone, otp) {
     throw new Error("User account is inactive");
   }
 
-  // Mark user as verified
   await pool.execute(
     `UPDATE users
      SET is_verified = TRUE,
          updated_at = NOW()
-     WHERE phone = ?`,
-    [phone]
+     WHERE email = ?`,
+    [email]
   );
 
   return {
@@ -88,21 +92,20 @@ async function verifyRegistrationOtp(phone, otp) {
     user: {
       id: user.id,
       name: user.name,
-      phone: user.phone,
+      email: user.email,
       role: user.role,
       is_verified: true,
     },
   };
 }
 
-async function requestLoginOtp(phone) {
-  // Find user
+async function requestLoginOtp(email) {
   const [users] = await pool.execute(
-    `SELECT id, name, phone, role, is_verified, is_active, is_deleted
+    `SELECT id, name, email, role, is_verified, is_active, is_deleted
      FROM users
-     WHERE phone = ?
+     WHERE email = ?
      LIMIT 1`,
-    [phone]
+    [email]
   );
 
   if (users.length === 0) {
@@ -111,7 +114,6 @@ async function requestLoginOtp(phone) {
 
   const user = users[0];
 
-  // Check account status
   if (user.is_deleted) {
     throw new Error("User account has been deleted");
   }
@@ -124,51 +126,46 @@ async function requestLoginOtp(phone) {
     throw new Error("User is not verified");
   }
 
-  // Send login OTP
-  sendOtp(phone);
+  await sendOtp(user.email);
 
   return {
-    message: "Login OTP sent successfully",
+    message: "Login OTP sent successfully to your email",
   };
 }
 
-async function verifyLoginOtp(phone, otp) {
-  // Verify OTP
-  const otpResult = verifyOtp(phone, otp);
+async function verifyLoginOtp(email, otp) {
+  const [users] = await pool.execute(
+    `SELECT id, name, email, role, is_verified, is_active, is_deleted
+     FROM users
+     WHERE email = ?
+     LIMIT 1`,
+    [email]
+  );
+
+  if (users.length === 0) {
+    throw new Error("User not found");
+  }
+
+  const user = users[0];
+
+  if (user.is_deleted) {
+    throw new Error("User account has been deleted");
+  }
+
+  if (!user.is_active) {
+    throw new Error("User account is inactive");
+  }
+
+  if (!user.is_verified) {
+    throw new Error("User is not verified");
+  }
+
+  const otpResult = await verifyOtp(user.email, otp);
 
   if (!otpResult.success) {
     throw new Error(otpResult.message);
   }
 
-  // Find user
-  const [users] = await pool.execute(
-    `SELECT id, name, phone, role, is_verified, is_active, is_deleted
-     FROM users
-     WHERE phone = ?
-     LIMIT 1`,
-    [phone]
-  );
-
-  if (users.length === 0) {
-    throw new Error("User not found");
-  }
-
-  const user = users[0];
-
-  // Check account status
-  if (user.is_deleted) {
-    throw new Error("User account has been deleted");
-  }
-
-  if (!user.is_active) {
-    throw new Error("User account is inactive");
-  }
-
-  if (!user.is_verified) {
-    throw new Error("User is not verified");
-  }
-
-  // Generate JWT
   const token = generateToken(user);
 
   return {
@@ -177,7 +174,7 @@ async function verifyLoginOtp(phone, otp) {
     user: {
       id: user.id,
       name: user.name,
-      phone: user.phone,
+      email: user.email,
       role: user.role,
     },
   };

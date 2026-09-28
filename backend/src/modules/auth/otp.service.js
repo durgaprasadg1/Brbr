@@ -1,26 +1,35 @@
-const otpStore = new Map();
+const { redisClient } = require("../../common/redis/client");
+const { sendOtpEmail } = require("./email.service");
 
-const OTP_EXPIRY = 5 * 60 * 1000; // 5 minutes
+const OTP_EXPIRY = 5 * 60; // 5 minutes
+
+function getOtpKey(email) {
+  return `otp:${email}`;
+}
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-function sendOtp(phone) {
+async function sendOtp(email) {
   const otp = generateOtp();
+  const key = getOtpKey(email);
 
-  otpStore.set(phone, {
-    otp,
-    expiresAt: Date.now() + OTP_EXPIRY,
+  // Store OTP in Redis for 5 minutes
+  await redisClient.set(key, otp, {
+    EX: OTP_EXPIRY,
   });
 
-  console.log(`OTP for ${phone}: ${otp}`);
+  // Send OTP to user's email
+  await sendOtpEmail(email, otp);
 
   return true;
 }
 
-function verifyOtp(phone, otp) {
-  const storedOtp = otpStore.get(phone);
+async function verifyOtp(email, otp) {
+  const key = getOtpKey(email);
+
+  const storedOtp = await redisClient.get(key);
 
   if (!storedOtp) {
     return {
@@ -29,23 +38,15 @@ function verifyOtp(phone, otp) {
     };
   }
 
-  if (Date.now() > storedOtp.expiresAt) {
-    otpStore.delete(phone);
-
-    return {
-      success: false,
-      message: "OTP expired",
-    };
-  }
-
-  if (storedOtp.otp !== otp) {
+  if (storedOtp !== otp) {
     return {
       success: false,
       message: "Invalid OTP",
     };
   }
 
-  otpStore.delete(phone);
+  // Delete OTP after successful verification
+  await redisClient.del(key);
 
   return {
     success: true,

@@ -6,19 +6,18 @@ const registerSchema = z.object({
     .min(2, "Name must be at least 2 characters")
     .max(100, "Name cannot exceed 100 characters"),
 
-  phone: z
+  email: z
     .string()
-    .regex(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
+    .email("Please enter a valid email address")
+    .max(255, "Email cannot exceed 255 characters"),
 
-  role: z
-    .enum(["CUSTOMER", "OWNER"])
-    .default("CUSTOMER"),
+  role: z.enum(["CUSTOMER", "OWNER"]).default("CUSTOMER"),
 });
 
 const verifyOtpSchema = z.object({
-  phone: z
+  email: z
     .string()
-    .regex(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
+    .email("Please enter a valid email address"),
 
   otp: z
     .string()
@@ -26,13 +25,24 @@ const verifyOtpSchema = z.object({
 });
 
 const loginSchema = z.object({
-  phone: z
+  email: z
     .string()
-    .regex(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
+    .email("Please enter a valid email address"),
+});
+
+const verifyLoginSchema = z.object({
+  email: z
+    .string()
+    .email("Please enter a valid email address"),
+
+  otp: z
+    .string()
+    .regex(/^[0-9]{6}$/, "OTP must be exactly 6 digits"),
 });
 
 module.exports = {
   registerSchema,
   verifyOtpSchema,
   loginSchema,
+  verifyLoginSchema,
 };
