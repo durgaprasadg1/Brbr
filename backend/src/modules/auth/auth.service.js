@@ -1,15 +1,15 @@
 const pool = require("../../config/db");
 
 const { sendOtp, verifyOtp } = require("./otp.service");
+
 const { generateToken } = require("../../../utils/jwt");
 
 async function registerUser(name, email, role = "CUSTOMER") {
-  if (!["CUSTOMER", "OWNER"].includes(role)) {
+  if (!["CUSTOMER", "OWNER", "ADMIN"].includes(role)) {
     throw new Error("Invalid registration role");
   }
 
   // Check if email already exists
- 
   const [existingUsers] = await pool.execute(
     `SELECT id, name, email, role, is_verified
      FROM users
@@ -79,6 +79,7 @@ async function verifyRegistrationOtp(email, otp) {
     throw new Error("User account is inactive");
   }
 
+  // Mark account as verified
   await pool.execute(
     `UPDATE users
      SET is_verified = TRUE,
@@ -87,8 +88,15 @@ async function verifyRegistrationOtp(email, otp) {
     [email]
   );
 
+  // Generate JWT immediately after successful registration verification
+  const token = generateToken({
+    id: user.id,
+    role: user.role,
+  });
+
   return {
-    message: "OTP verified successfully",
+    message: "Registration successful",
+    token,
     user: {
       id: user.id,
       name: user.name,

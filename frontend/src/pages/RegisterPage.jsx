@@ -1,9 +1,14 @@
 import { useState } from 'react'
+
 import { Link, useNavigate } from 'react-router-dom'
+
 import { ArrowLeft, ArrowRight, Clock3 } from 'lucide-react'
 
 import Brand from '../components/Brand.jsx'
+
 import RoleSelector from '../components/auth/RoleSelector.jsx'
+
+import { useAuth } from '../context/AuthContext.jsx'
 
 import {
   registerUser,
@@ -18,6 +23,8 @@ export default function RegisterPage() {
   const [otpStep, setOtpStep] = useState(false)
   const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const { setUser } = useAuth()
 
   const navigate = useNavigate()
 
@@ -46,7 +53,10 @@ export default function RegisterPage() {
         })
 
         setOtpStep(true)
-        setNotice(result.message || 'OTP sent to your email.')
+
+        setNotice(
+          result.message || 'OTP sent to your email.'
+        )
       } catch (error) {
         setNotice(error.message)
       } finally {
@@ -69,9 +79,17 @@ export default function RegisterPage() {
         otp
       )
 
-      setNotice(result.message || 'Registration successful.')
+      setUser(result.user)
 
-      navigate('/login')
+setNotice(
+  result.message || 'Registration successful.'
+)
+
+if (result.user?.role === 'ADMIN') {
+  navigate('/admin')
+} else {
+  navigate('/')
+}
     } catch (error) {
       setNotice(error.message)
     } finally {
@@ -137,7 +155,9 @@ export default function RegisterPage() {
           aria-labelledby="register-title"
         >
           <div className="card-kicker">
-            {otpStep ? 'VERIFY YOUR EMAIL' : 'JOIN CHAIRSIDE'}
+            {otpStep
+              ? 'VERIFY YOUR EMAIL'
+              : 'JOIN CHAIRSIDE'}
           </div>
 
           <h2 id="register-title">
@@ -158,10 +178,6 @@ export default function RegisterPage() {
               onSelect={(nextRole) => {
                 setRole(nextRole)
                 setNotice('')
-              }}
-              disabledRoles={['admin']}
-              disabledRoleDetails={{
-                admin: 'Admin accounts are managed separately',
               }}
             />
           )}

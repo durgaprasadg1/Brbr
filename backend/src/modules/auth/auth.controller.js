@@ -43,9 +43,18 @@ async function verifyOtp(req, res) {
       data.otp
     );
 
+    // Set JWT cookie immediately after successful registration
+    res.cookie("token", result.token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
     return res.status(200).json({
       success: true,
-      ...result,
+      message: result.message,
+      user: result.user,
     });
   } catch (error) {
     return res.status(400).json({

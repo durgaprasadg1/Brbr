@@ -11,7 +11,7 @@ const registerSchema = z.object({
     .email("Please enter a valid email address")
     .max(255, "Email cannot exceed 255 characters"),
 
-  role: z.enum(["CUSTOMER", "OWNER"]).default("CUSTOMER"),
+  role: z.enum(["CUSTOMER", "OWNER", "ADMIN"]).default("CUSTOMER"),
 });
 
 const verifyOtpSchema = z.object({
