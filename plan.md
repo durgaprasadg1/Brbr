@@ -7,7 +7,7 @@ Build a web-based Barber Shop Queue Management System.
 Roles: CUSTOMER, OWNER, ADMIN.
 
 Customer flow:
-Register/login with mobile OTP -> discover shops -> select services -> pay ->
+Register/login with mobile OTP or Email + OTP -> discover shops -> select services -> pay ->
 submit queue request -> owner accepts -> enter active queue -> monitor position
 and ETA in realtime -> arrive -> service starts -> optional extra service/payment
 -> service completes -> history/review.
