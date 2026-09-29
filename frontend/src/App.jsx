@@ -8,6 +8,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 
 import { AuthProvider } from './context/AuthContext.jsx'
+import PublicOnlyRoute from './components/auth/PublicOnlyRoute.jsx'
 
 import './App.css'
 
@@ -18,13 +19,31 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
 
-          <Route path="/login" element={<AuthPage />} />
+          <Route
+            path="/login"
+            element={
+              <PublicOnlyRoute>
+                <AuthPage />
+              </PublicOnlyRoute>
+            }
+          />
 
-          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/register"
+            element={
+              <PublicOnlyRoute>
+                <RegisterPage />
+              </PublicOnlyRoute>
+            }
+          />
 
           <Route
             path="/admin/login"
-            element={<AdminLoginPage />}
+            element={
+              <PublicOnlyRoute>
+                <AdminLoginPage />
+              </PublicOnlyRoute>
+            }
           />
 
           <Route

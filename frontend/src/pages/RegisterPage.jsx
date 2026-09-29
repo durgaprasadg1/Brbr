@@ -86,9 +86,9 @@ setNotice(
 )
 
 if (result.user?.role === 'ADMIN') {
-  navigate('/admin')
+  navigate('/admin', { replace: true })
 } else {
-  navigate('/')
+  navigate('/', { replace: true })
 }
     } catch (error) {
       setNotice(error.message)
