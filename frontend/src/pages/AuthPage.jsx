@@ -66,7 +66,7 @@ export default function AuthPage() {
 
       setUser(result.user)
 
-      navigate('/')
+      navigate('/', { replace: true })
     } catch (error) {
       setNotice(error.message)
     } finally {
