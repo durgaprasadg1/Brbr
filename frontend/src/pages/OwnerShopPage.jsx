@@ -79,7 +79,7 @@ export default function OwnerShopPage() {
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login', { replace: true })
+    navigate('/users/login', { replace: true })
   }
 
   if (loading) {
@@ -97,7 +97,7 @@ export default function OwnerShopPage() {
         </div>
         <div className="sidebar-label">OWNER DASHBOARD</div>
         <nav className="sidebar-nav" aria-label="Owner navigation">
-          <button className="sidebar-link sidebar-link-active" type="button" onClick={() => navigate('/owner')}>
+          <button className="sidebar-link sidebar-link-active" type="button" onClick={() => navigate('/owners/dashboard')}>
             <Store size={17} />
             <span>My shops</span>
           </button>
@@ -119,7 +119,7 @@ export default function OwnerShopPage() {
 
       <section className="admin-main owner-main">
         <header className="admin-topbar">
-          <button type="button" className="shop-page-back" onClick={() => navigate('/owner')}>
+          <button type="button" className="shop-page-back" onClick={() => navigate('/owners/dashboard')}>
             <ArrowLeft size={15} /> Back to shops
           </button>
           <div className="topbar-right">

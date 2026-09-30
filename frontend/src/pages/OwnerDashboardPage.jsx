@@ -189,7 +189,7 @@ export default function OwnerDashboardPage() {
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login', { replace: true })
+    navigate('/users/login', { replace: true })
   }
 
   return (

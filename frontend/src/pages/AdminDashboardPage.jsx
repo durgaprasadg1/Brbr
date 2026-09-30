@@ -193,7 +193,7 @@ export default function AdminDashboardPage() {
 
   return (
     <main className="admin-shell">
-      <AdminSidebar items={adminNavItems} active={active} onNavigate={navigateSection} open={sidebarOpen} onClose={() => setSidebarOpen(false)} onLogout={() => navigate('/admin/login')} />
+      <AdminSidebar items={adminNavItems} active={active} onNavigate={navigateSection} open={sidebarOpen} onClose={() => setSidebarOpen(false)} onLogout={() => navigate('/admins/login')} />
       <section className="admin-main">
         <AdminTopbar active={active} onMenuOpen={() => setSidebarOpen(true)} />
         <div className="dashboard-content">
