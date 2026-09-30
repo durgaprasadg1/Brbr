@@ -29,6 +29,13 @@ router.get(
   ShopController.getActiveShopDetails,
 );
 
+router.post(
+  "/:id/queue",
+  authenticate,
+  authorizeRoles("CUSTOMER"),
+  ShopController.joinShopQueue,
+);
+
 router.get(
   "/:id/services",
   authenticate,

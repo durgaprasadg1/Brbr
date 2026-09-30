@@ -166,6 +166,47 @@ class ShopModel {
     return result.affectedRows > 0;
   }
 
+  static async createQueueRequest({ customerId, shopId, serviceIds }) {
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      const [serviceRows] = await connection.execute(
+        `SELECT id, price
+         FROM services
+         WHERE shop_id = ? AND id IN (${serviceIds.map(() => '?').join(', ')})`,
+        [shopId, ...serviceIds],
+      );
+
+      if (serviceRows.length !== serviceIds.length) {
+        throw new Error("One or more selected services are not available at this shop.");
+      }
+
+      const [requestResult] = await connection.execute(
+        `INSERT INTO queue_requests (customer_id, shop_id, status, requested_at, expires_at)
+         VALUES (?, ?, 'REQUESTED', NOW(), NULL)`,
+        [customerId, shopId],
+      );
+
+      for (const service of serviceRows) {
+        await connection.execute(
+          `INSERT INTO queue_request_services (queue_request_id, service_id, price_at_booking)
+           VALUES (?, ?, ?)`,
+          [requestResult.insertId, service.id, service.price],
+        );
+      }
+
+      await connection.commit();
+      return requestResult.insertId;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
+
   static async findAllPending() {
     const [rows] = await pool.execute(
       `SELECT s.*, u.name AS owner_name, u.email AS owner_email

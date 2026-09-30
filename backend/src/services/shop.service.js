@@ -210,6 +210,28 @@ class ShopService {
     };
   }
 
+  static async joinShopQueue({ customerId, shopId, serviceIds = [] }) {
+    const shop = await ShopModel.findActiveById(shopId);
+
+    if (!shop) throw new Error("Shop not found.");
+    if (!Boolean(shop.is_opened)) throw new Error("This shop is currently closed.");
+
+    const normalizedServiceIds = [...new Set(serviceIds.map((serviceId) => Number(serviceId)).filter(Number.isInteger))];
+
+    if (!normalizedServiceIds.length) throw new Error("Select at least one service.");
+
+    const queueRequestId = await ShopModel.createQueueRequest({
+      customerId,
+      shopId,
+      serviceIds: normalizedServiceIds,
+    });
+
+    return {
+      queueRequestId,
+      message: "You joined the queue successfully.",
+    };
+  }
+
   static async listPendingShopRequests() {
     const shops = await ShopModel.findAllPending();
     return { shops };

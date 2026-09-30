@@ -112,11 +112,16 @@
 .customer-services-section h2 em { color: #809072; font-style: italic; }
 .customer-service-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .customer-service-card { display: flex; align-items: center; gap: 13px; min-height: 75px; padding: 14px 16px; border: 1px solid #e5e8df; border-radius: 10px; background: #fff; }
+.customer-service-card { width: 100%; color: inherit; text-align: left; cursor: pointer; transition: border-color .2s, background .2s, transform .2s; }
+.customer-service-card:hover { border-color: #aab9a0; transform: translateY(-1px); }
+.customer-service-selected { border-color: #718566; background: #f0f5ed; box-shadow: 0 0 0 2px #e3ebdf; }
 .customer-service-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 9px; color: #6e8063; background: #edf2e9; }
 .customer-service-card h3 { margin: 0; color: #42473e; font-size: 13px; }
 .customer-service-card p { margin-top: 5px; color: #999d95; font-size: 10px; }
 .customer-service-card > strong { margin-left: auto; color: #5f7456; font-size: 13px; white-space: nowrap; }
 .customer-queue-button { width: fit-content; margin-top: 27px; }
+.customer-queue-button:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+.customer-queue-notice { max-width: 520px; margin-top: 18px; }
 
 @media (max-width: 900px) {
   .home-nav-wrap, .home-hero, .home-footer { width: calc(100% - 64px); }

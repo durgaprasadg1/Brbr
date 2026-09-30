@@ -31,6 +31,13 @@ export async function getPublicShopDetails(shopId) {
   return apiRequest(`/shops/public/${shopId}`, { method: "GET" });
 }
 
+export async function joinShopQueue(shopId, serviceIds) {
+  return apiRequest(`/shops/${shopId}/queue`, {
+    method: "POST",
+    body: JSON.stringify({ service_ids: serviceIds }),
+  });
+}
+
 export async function createShop(shopInput) {
   return apiRequest("/shops", {
     method: "POST",

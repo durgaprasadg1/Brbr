@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { ArrowLeft, Clock3, MapPin, Scissors, Star } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
-import { getPublicShopDetails } from '../services/shopApi.js'
+import { getPublicShopDetails, joinShopQueue } from '../services/shopApi.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import '../Home.css'
 
@@ -13,8 +13,13 @@ export default function CustomerShopPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const [shop, setShop] = useState(null)
   const [services, setServices] = useState([])
+  const [selectedServiceIds, setSelectedServiceIds] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [joining, setJoining] = useState(false)
+
+  const canJoinQueue = isAuthenticated && user?.role === 'CUSTOMER'
 
   useEffect(() => {
     getPublicShopDetails(shopId)
@@ -25,6 +30,31 @@ export default function CustomerShopPage() {
       .catch((requestError) => setError(requestError.message))
       .finally(() => setLoading(false))
   }, [shopId])
+
+  const toggleService = (serviceId) => {
+    setSelectedServiceIds((current) => current.includes(serviceId)
+      ? current.filter((id) => id !== serviceId)
+      : [...current, serviceId])
+    setNotice('')
+  }
+
+  const handleJoinQueue = async () => {
+    if (!selectedServiceIds.length) {
+      setNotice('Select at least one service to join the queue.')
+      return
+    }
+
+    try {
+      setJoining(true)
+      const result = await joinShopQueue(shopId, selectedServiceIds)
+      setNotice(`${result.message} Request #${result.queue_request_id}.`)
+      setSelectedServiceIds([])
+    } catch (requestError) {
+      setNotice(requestError.message)
+    } finally {
+      setJoining(false)
+    }
+  }
 
   if (loading) {
     return <main className="customer-shop-page"><div className="shops-empty">Loading shop details...</div></main>
@@ -82,21 +112,31 @@ export default function CustomerShopPage() {
         ) : (
           <div className="customer-service-grid">
             {services.map((service) => (
-              <article className="customer-service-card" key={service.id}>
+              <button
+                type="button"
+                className={`customer-service-card ${selectedServiceIds.includes(service.id) ? 'customer-service-selected' : ''}`}
+                key={service.id}
+                onClick={() => toggleService(service.id)}
+              >
                 <div className="customer-service-icon"><Scissors size={18} /></div>
                 <div>
                   <h3>{service.name}</h3>
                   <p>{service.duration_minutes} minutes</p>
                 </div>
                 <strong>₹{Number(service.price).toFixed(2)}</strong>
-              </article>
+              </button>
             ))}
           </div>
         )}
-        <Link className="hero-primary customer-queue-button" to={isAuthenticated ? `/shops/${shopId}` : '/login'}>
-          {isAuthenticated ? 'Join the queue' : 'Login to join the queue'}
-          <ArrowLeft size={16} />
-        </Link>
+        {notice && <div className="inline-notice customer-queue-notice">{notice}</div>}
+        {!authLoading && canJoinQueue ? (
+          <button className="hero-primary customer-queue-button" type="button" onClick={handleJoinQueue} disabled={joining || !shop.is_opened}>
+            {joining ? 'Joining...' : !shop.is_opened ? 'Shop is closed' : selectedServiceIds.length ? `Join queue (${selectedServiceIds.length})` : 'Select a service'}
+            <ArrowLeft size={16} />
+          </button>
+        ) : (
+          <Link className="hero-primary customer-queue-button" to="/login">Login to join the queue <ArrowLeft size={16} /></Link>
+        )}
       </section>
     </main>
   )

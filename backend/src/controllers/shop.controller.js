@@ -151,6 +151,24 @@ class ShopController {
     }
   }
 
+  static async joinShopQueue(req, res, next) {
+    try {
+      const result = await ShopService.joinShopQueue({
+        customerId: req.user.id,
+        shopId: req.params.id,
+        serviceIds: req.body.service_ids || req.body.serviceIds,
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: result.message,
+        queue_request_id: result.queueRequestId,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getPendingRequests(req, res, next) {
     try {
       const result = await ShopService.listPendingShopRequests();
