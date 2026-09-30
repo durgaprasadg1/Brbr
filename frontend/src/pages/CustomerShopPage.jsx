@@ -3,12 +3,14 @@ import { ArrowLeft, Clock3, MapPin, Scissors, Star } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
 import { getPublicShopDetails } from '../services/shopApi.js'
+import { useAuth } from '../context/AuthContext.jsx'
 import '../Home.css'
 
 const defaultShopImage = 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80'
 
 export default function CustomerShopPage() {
   const { shopId } = useParams()
+  const { user, isAuthenticated, loading: authLoading } = useAuth()
   const [shop, setShop] = useState(null)
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
@@ -44,7 +46,13 @@ export default function CustomerShopPage() {
           <span className="trimq-mark"><Scissors size={18} strokeWidth={2.3} /></span>
           <span>Trim<span>Q</span></span>
         </Link>
-        <Link className="customer-shop-login" to="/login">Login to join queue <ArrowLeft size={14} /></Link>
+        {authLoading ? (
+          <span className="customer-shop-login">Checking session...</span>
+        ) : isAuthenticated ? (
+          <span className="customer-shop-login">Hi, {user?.name || 'Customer'}</span>
+        ) : (
+          <Link className="customer-shop-login" to="/login">Login to join queue <ArrowLeft size={14} /></Link>
+        )}
       </header>
 
       <section className="customer-shop-hero">
@@ -85,7 +93,10 @@ export default function CustomerShopPage() {
             ))}
           </div>
         )}
-        <Link className="hero-primary customer-queue-button" to="/login">Login to join the queue <ArrowLeft size={16} /></Link>
+        <Link className="hero-primary customer-queue-button" to={isAuthenticated ? `/shops/${shopId}` : '/login'}>
+          {isAuthenticated ? 'Join the queue' : 'Login to join the queue'}
+          <ArrowLeft size={16} />
+        </Link>
       </section>
     </main>
   )
