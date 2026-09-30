@@ -16,9 +16,10 @@ CREATE TABLE users (
 
 CREATE TABLE shops (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    owner_id BIGINT NOT NULL UNIQUE,
+    owner_id BIGINT NOT NULL,
     name VARCHAR(150) NOT NULL,
     description TEXT NULL,
+    image_url TEXT NULL,
     address TEXT NOT NULL,
     latitude DECIMAL(10,8) NOT NULL,
     longitude DECIMAL(11,8) NOT NULL,

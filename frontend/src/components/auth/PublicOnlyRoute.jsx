@@ -21,12 +21,14 @@ export default function PublicOnlyRoute({ children }) {
   }
 
   if (isAuthenticated) {
-    return (
-      <Navigate
-        to={user?.role === 'ADMIN' ? '/admin' : '/'}
-        replace
-      />
-    )
+    const destination =
+      user?.role === 'ADMIN'
+        ? '/admin'
+        : user?.role === 'OWNER'
+          ? '/owner'
+          : '/'
+
+    return <Navigate to={destination} replace />
   }
 
   return children

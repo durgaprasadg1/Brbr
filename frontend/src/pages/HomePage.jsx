@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Link } from 'react-router-dom'
 
@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   Check,
   Clock3,
+  MapPin,
   Menu,
   Scissors,
   X,
@@ -15,8 +16,11 @@ import {
 import barberHero from '../assets/barber-hero.png'
 
 import { useAuth } from '../context/AuthContext.jsx'
+import { getPublicShops } from '../services/shopApi.js'
 
 import '../Home.css'
+
+const defaultShopImage = 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80'
 
 const howSteps = [
   {
@@ -43,8 +47,29 @@ const howSteps = [
 
 export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [shops, setShops] = useState([])
+  const [shopsLoading, setShopsLoading] = useState(true)
 
   const { user, isAuthenticated, loading, logout } = useAuth()
+
+  useEffect(() => {
+    let active = true
+
+    getPublicShops()
+      .then((result) => {
+        if (active) setShops(result.shops || [])
+      })
+      .catch(() => {
+        if (active) setShops([])
+      })
+      .finally(() => {
+        if (active) setShopsLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   const closeMenu = () => setMenuOpen(false)
 
@@ -91,9 +116,9 @@ export default function HomePage() {
               Home
             </a>
 
-            <Link to="/login" onClick={closeMenu}>
+            <a href="#shops" onClick={closeMenu}>
               Find Shops
-            </Link>
+            </a>
 
             <a href="#how-it-works" onClick={closeMenu}>
               How It Works
@@ -166,7 +191,7 @@ export default function HomePage() {
           <div className="hero-actions">
             <Link
               className="hero-primary"
-              to="/login"
+              to="#shops"
             >
               Find a Barber
               <ArrowRight size={17} />
@@ -244,6 +269,44 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="shops-section" id="shops" aria-labelledby="shops-heading">
+        <div className="shops-heading">
+          <div>
+            <div className="section-eyebrow">AVAILABLE ON TRIMQ</div>
+            <h2 id="shops-heading">Find your next <em>barber.</em></h2>
+          </div>
+          <p>Browse approved shops near you and see who is open before you join a queue.</p>
+        </div>
+
+        {shopsLoading ? (
+          <div className="shops-empty">Loading available shops...</div>
+        ) : shops.length === 0 ? (
+          <div className="shops-empty">No approved shops are available yet.</div>
+        ) : (
+          <div className="public-shop-grid">
+            {shops.map((shop) => (
+              <article className="public-shop-card" key={shop.id}>
+                <div className="public-shop-image-wrap">
+                  <img src={shop.image_url || defaultShopImage} alt={shop.name} className="public-shop-image" />
+                  <span className={`public-shop-status ${shop.is_opened ? 'public-shop-open' : 'public-shop-closed'}`}>
+                    {shop.is_opened ? 'Open now' : 'Closed'}
+                  </span>
+                </div>
+                <div className="public-shop-body">
+                  <div className="public-shop-title-row">
+                    <h3>{shop.name}</h3>
+                    <span>{Number(shop.average_rating || 0).toFixed(1)} ★</span>
+                  </div>
+                  <p className="public-shop-address"><MapPin size={13} /> {shop.address}</p>
+                  <div className="public-shop-meta"><Clock3 size={13} /> {shop.opening_time} - {shop.closing_time}</div>
+                  <Link className="public-shop-link" to={`/shops/${shop.id}`}>View shop and services <ArrowRight size={14} /></Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
       <section
         className="how-section"
         id="how-it-works"
@@ -318,7 +381,7 @@ export default function HomePage() {
         >
           <Link to="/">Home</Link>
 
-          <Link to="/login">Find Shops</Link>
+          <a href="#shops">Find Shops</a>
 
           <a href="#how-it-works">
             How It Works

@@ -66,7 +66,13 @@ export default function AuthPage() {
 
       setUser(result.user)
 
-      navigate('/', { replace: true })
+      if (result.user?.role === 'ADMIN') {
+        navigate('/admin', { replace: true })
+      } else if (result.user?.role === 'OWNER') {
+        navigate('/owner', { replace: true })
+      } else {
+        navigate('/', { replace: true })
+      }
     } catch (error) {
       setNotice(error.message)
     } finally {

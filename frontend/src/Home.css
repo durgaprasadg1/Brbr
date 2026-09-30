@@ -1,3 +1,35 @@
+.shops-section {
+  padding: 105px 7.2% 112px;
+  background: #f4f6f1;
+}
+.shops-heading {
+  width: min(1150px, 100%);
+  margin: 0 auto 32px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+}
+.shops-heading h2 { margin: 10px 0 0; color: #2c3029; font: 600 clamp(30px, 4vw, 48px)/1.1 'Manrope', sans-serif; letter-spacing: -2px; }
+.shops-heading h2 em { color: #829173; font-style: italic; }
+.shops-heading > p { max-width: 330px; color: #858b81; font-size: 13px; line-height: 1.7; }
+.public-shop-grid { width: min(1150px, 100%); margin: 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.public-shop-card { overflow: hidden; border: 1px solid #e4e8df; border-radius: 14px; background: #fff; box-shadow: 0 16px 38px rgba(62, 73, 54, .06); }
+.public-shop-image-wrap { position: relative; height: 190px; overflow: hidden; }
+.public-shop-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+.public-shop-status { position: absolute; top: 14px; left: 14px; border-radius: 999px; padding: 7px 10px; color: #fff; font-size: 9px; font-weight: 700; }
+.public-shop-open { background: #5f805d; }
+.public-shop-closed { background: #918978; }
+.public-shop-body { padding: 18px; }
+.public-shop-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.public-shop-title-row h3 { margin: 0; color: #30342d; font-size: 18px; }
+.public-shop-title-row > span { color: #ad8857; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.public-shop-address { display: flex; align-items: flex-start; gap: 6px; margin: 11px 0 0; color: #858b82; font-size: 11px; line-height: 1.5; }
+.public-shop-address svg { flex: 0 0 auto; color: #839176; }
+.public-shop-meta { display: flex; align-items: center; gap: 6px; margin-top: 13px; color: #697366; font-size: 11px; }
+.public-shop-link { display: inline-flex; align-items: center; gap: 7px; margin-top: 19px; color: #64755b; font-size: 10px; font-weight: 700; text-decoration: none; }
+.public-shop-link:hover { color: #3f5138; }
+.shops-empty { width: min(1150px, 100%); margin: 0 auto; padding: 35px; border: 1px dashed #d8dfd2; border-radius: 12px; color: #858b82; text-align: center; font-size: 12px; }
 .home-page { min-height: 100vh; overflow: hidden; color: #252720; background: #f8f7f2; }
 .home-header { position: relative; z-index: 5; background: #f8f7f2; }
 .home-nav-wrap { width: min(1320px, calc(100% - 104px)); height: 83px; display: grid; grid-template-columns: 1fr 1.4fr 1fr; align-items: center; margin: 0 auto; border-bottom: 1px solid #eae9e1; }
@@ -60,6 +92,31 @@
 .footer-links { display: flex; align-items: center; gap: 27px; }
 .footer-links a { font-size: 9px; }
 .footer-copyright { color: #a3a49b; font-size: 9px; }
+.customer-shop-page { min-height: 100vh; color: #282b25; background: #f8f7f2; }
+.customer-shop-header { width: min(1150px, calc(100% - 104px)); height: 82px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-bottom: 1px solid #e8e8df; }
+.customer-shop-back, .customer-shop-login { display: inline-flex; align-items: center; gap: 7px; color: #687267; font-size: 10px; font-weight: 600; text-decoration: none; }
+.customer-shop-back svg { order: -1; }
+.customer-shop-login { justify-self: end; color: #5d7154; }
+.customer-shop-login svg { transform: rotate(180deg); }
+.customer-shop-hero { width: min(1150px, calc(100% - 104px)); margin: 55px auto 0; display: grid; grid-template-columns: minmax(320px, .9fr) minmax(0, 1fr); gap: 55px; align-items: center; }
+.customer-shop-hero > img { width: 100%; height: 370px; border-radius: 12px; object-fit: cover; box-shadow: 0 20px 42px #292e2414; }
+.customer-shop-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-top: 12px; }
+.customer-shop-title-row h1 { margin: 0; color: #2b2e28; font: 600 clamp(34px, 5vw, 60px)/1.05 'Manrope', sans-serif; letter-spacing: -2.8px; }
+.customer-shop-title-row .public-shop-status { position: static; flex: 0 0 auto; margin-top: 8px; }
+.customer-shop-address { display: flex; align-items: center; gap: 7px; margin-top: 18px; color: #777d73; font-size: 13px; }
+.customer-shop-facts { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 20px; color: #697366; font-size: 11px; }
+.customer-shop-facts span { display: inline-flex; align-items: center; gap: 6px; }
+.customer-shop-description { max-width: 450px; margin-top: 25px; color: #858b82; font-size: 13px; line-height: 1.8; }
+.customer-services-section { width: min(1150px, calc(100% - 104px)); margin: 90px auto 0; padding-bottom: 100px; }
+.customer-services-section h2 { margin: 10px 0 28px; color: #2e312a; font: 600 35px/1.15 'Manrope', sans-serif; letter-spacing: -1.5px; }
+.customer-services-section h2 em { color: #809072; font-style: italic; }
+.customer-service-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.customer-service-card { display: flex; align-items: center; gap: 13px; min-height: 75px; padding: 14px 16px; border: 1px solid #e5e8df; border-radius: 10px; background: #fff; }
+.customer-service-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 9px; color: #6e8063; background: #edf2e9; }
+.customer-service-card h3 { margin: 0; color: #42473e; font-size: 13px; }
+.customer-service-card p { margin-top: 5px; color: #999d95; font-size: 10px; }
+.customer-service-card > strong { margin-left: auto; color: #5f7456; font-size: 13px; white-space: nowrap; }
+.customer-queue-button { width: fit-content; margin-top: 27px; }
 
 @media (max-width: 900px) {
   .home-nav-wrap, .home-hero, .home-footer { width: calc(100% - 64px); }
@@ -74,6 +131,10 @@
   .image-caption { left: -22px; }
   .hero-side-note { display: none; }
   .how-section { padding: 60px 32px; }
+  .shops-section { padding: 78px 32px 82px; }
+  .shops-heading { display: block; }
+  .shops-heading > p { margin-top: 14px; }
+  .public-shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
   .home-page { overflow: clip; }
@@ -106,6 +167,12 @@
   .caption-icon { width: 31px; height: 31px; }
   .image-index { right: 12px; bottom: -2px; }
   .how-section { padding: 49px 20px 43px; }
+  .shops-section { padding: 55px 20px 60px; }
+  .shops-heading { margin-bottom: 24px; }
+  .shops-heading h2 { font-size: 31px; letter-spacing: -1.4px; }
+  .shops-heading > p { font-size: 11px; }
+  .public-shop-grid { grid-template-columns: 1fr; gap: 15px; }
+  .public-shop-image-wrap { height: 175px; }
   .how-heading { display: block; margin-bottom: 24px; }
   .how-heading h2 { max-width: 320px; margin-top: 9px; font-size: 27px; }
   .how-heading > p { margin-top: 12px; font-size: 10px; }
@@ -122,4 +189,21 @@
   .footer-links { grid-column: 1 / -1; grid-row: 2; justify-content: space-between; gap: 9px; }
   .footer-links a { font-size: 8px; }
   .footer-copyright { align-self: start; padding-top: 7px; font-size: 8px; }
+}
+
+@media (max-width: 640px) {
+  .customer-shop-header { width: calc(100% - 40px); height: 68px; grid-template-columns: auto 1fr auto; gap: 12px; }
+  .customer-shop-header .trimq-brand { justify-self: center; font-size: 17px; }
+  .customer-shop-header .trimq-mark { width: 27px; height: 27px; }
+  .customer-shop-back, .customer-shop-login { font-size: 8px; }
+  .customer-shop-login { max-width: 72px; text-align: right; }
+  .customer-shop-hero { width: calc(100% - 40px); display: flex; flex-direction: column; align-items: stretch; gap: 28px; margin-top: 32px; }
+  .customer-shop-hero > img { height: 250px; }
+  .customer-shop-title-row h1 { font-size: 38px; letter-spacing: -1.8px; }
+  .customer-shop-address { font-size: 11px; }
+  .customer-shop-description { font-size: 11px; }
+  .customer-services-section { width: calc(100% - 40px); margin-top: 58px; padding-bottom: 65px; }
+  .customer-services-section h2 { font-size: 29px; }
+  .customer-service-grid { grid-template-columns: 1fr; }
+  .customer-queue-button { width: 100%; }
 }
