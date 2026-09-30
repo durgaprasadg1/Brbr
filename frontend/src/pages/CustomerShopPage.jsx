@@ -81,7 +81,7 @@ export default function CustomerShopPage() {
         ) : isAuthenticated ? (
           <span className="customer-shop-login">Hi, {user?.name || 'Customer'}</span>
         ) : (
-          <Link className="customer-shop-login" to="/login">Login to join queue <ArrowLeft size={14} /></Link>
+          <Link className="customer-shop-login" to="/users/login">Login to join queue <ArrowLeft size={14} /></Link>
         )}
       </header>
 
@@ -135,7 +135,7 @@ export default function CustomerShopPage() {
             <ArrowLeft size={16} />
           </button>
         ) : (
-          <Link className="hero-primary customer-queue-button" to="/login">Login to join the queue <ArrowLeft size={16} /></Link>
+          <Link className="hero-primary customer-queue-button" to="/users/login">Login to join the queue <ArrowLeft size={16} /></Link>
         )}
       </section>
     </main>

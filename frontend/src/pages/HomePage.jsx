@@ -149,14 +149,14 @@ export default function HomePage() {
               <>
                 <Link
                   className="home-login"
-                  to="/login"
+                  to="/users/login"
                 >
                   Login
                 </Link>
 
                 <Link
                   className="home-get-started"
-                  to="/login"
+                  to="/users/login"
                 >
                   Get Started
                   <ArrowRight size={15} />
@@ -299,7 +299,7 @@ export default function HomePage() {
                   </div>
                   <p className="public-shop-address"><MapPin size={13} /> {shop.address}</p>
                   <div className="public-shop-meta"><Clock3 size={13} /> {shop.opening_time} - {shop.closing_time}</div>
-                  <Link className="public-shop-link" to={`/shops/${shop.id}`}>View shop and services <ArrowRight size={14} /></Link>
+                  <Link className="public-shop-link" to={`/users/shops/${shop.id}`}>View shop and services <ArrowRight size={14} /></Link>
                 </div>
               </article>
             ))}
@@ -387,7 +387,7 @@ export default function HomePage() {
             How It Works
           </a>
 
-          <Link to="/login">Login</Link>
+          <Link to="/users/login">Login</Link>
         </nav>
 
         <span className="footer-copyright">

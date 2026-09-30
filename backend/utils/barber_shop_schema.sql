@@ -19,7 +19,7 @@ CREATE TABLE shops (
     owner_id BIGINT NOT NULL,
     name VARCHAR(150) NOT NULL,
     description TEXT NULL,
-    image_url TEXT NULL,
+    image_url TEXT NOT   NULL,
     address TEXT NOT NULL,
     latitude DECIMAL(10,8) NOT NULL,
     longitude DECIMAL(11,8) NOT NULL,

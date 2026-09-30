@@ -67,11 +67,11 @@ export default function AuthPage() {
       setUser(result.user)
 
       if (result.user?.role === 'ADMIN') {
-        navigate('/admin', { replace: true })
+        navigate('/admins/dashboard', { replace: true })
       } else if (result.user?.role === 'OWNER') {
-        navigate('/owner', { replace: true })
+        navigate('/owners/dashboard', { replace: true })
       } else {
-        navigate('/', { replace: true })
+        navigate('/users', { replace: true })
       }
     } catch (error) {
       setNotice(error.message)
@@ -88,7 +88,7 @@ export default function AuthPage() {
         <div className="register-login-link">
           <span>Don't have an account?</span>
 
-          <Link to="/register" className="quiet-link">
+          <Link to="/users/register" className="quiet-link">
             Register <ArrowRight size={15} />
           </Link>
         </div>
@@ -251,7 +251,7 @@ export default function AuthPage() {
 
           <p className="account-switch">
             Don't have an account?{' '}
-            <Link to="/register">Create one</Link>
+            <Link to="/users/register">Create one</Link>
           </p>
         </section>
       </div>

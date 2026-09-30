@@ -8,7 +8,7 @@ export default function NotFoundPage() {
       <Brand />
       <h1>That page isn’t here.</h1>
       <p>Head back to sign in to get started.</p>
-      <Link className="primary-button" to="/login">Back to sign in <ArrowRight size={16} /></Link>
+      <Link className="primary-button" to="/users/login">Back to sign in <ArrowRight size={16} /></Link>
     </main>
   )
 }

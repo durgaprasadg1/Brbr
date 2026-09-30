@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
 
       setUser(result.user)
 
-      navigate('/admin')
+      navigate('/admins/dashboard', { replace: true })
     } catch (error) {
       setNotice(error.message)
     } finally {
@@ -91,7 +91,7 @@ export default function AdminLoginPage() {
         <Brand />
 
         <Link
-          to="/login"
+          to="/users/login"
           className="quiet-link"
         >
           <ArrowLeft size={15} />

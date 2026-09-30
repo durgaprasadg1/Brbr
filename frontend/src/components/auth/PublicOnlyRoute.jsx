@@ -23,10 +23,10 @@ export default function PublicOnlyRoute({ children }) {
   if (isAuthenticated) {
     const destination =
       user?.role === 'ADMIN'
-        ? '/admin'
+        ? '/admins/dashboard'
         : user?.role === 'OWNER'
-          ? '/owner'
-          : '/'
+          ? '/owners/dashboard'
+          : '/users'
 
     return <Navigate to={destination} replace />
   }

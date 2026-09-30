@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom'
 
 import HomePage from './pages/HomePage.jsx'
 import AuthPage from './pages/AuthPage.jsx'
@@ -16,6 +16,13 @@ import ProtectedRoute from './components/auth/ProtectedRoute.jsx'
 
 import './App.css'
 
+function LegacyShopRedirect({ owner = false }) {
+  const { shopId } = useParams()
+  const basePath = owner ? '/owners/shops' : '/users/shops'
+
+  return <Navigate to={`${basePath}/${shopId}`} replace />
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -23,10 +30,11 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
 
-          <Route path="/shops/:shopId" element={<CustomerShopPage />} />
+          <Route path="/users" element={<HomePage />} />
+          <Route path="/users/shops/:shopId" element={<CustomerShopPage />} />
 
           <Route
-            path="/login"
+            path="/users/login"
             element={
               <PublicOnlyRoute>
                 <AuthPage />
@@ -35,7 +43,7 @@ export default function App() {
           />
 
           <Route
-            path="/register"
+            path="/users/register"
             element={
               <PublicOnlyRoute>
                 <RegisterPage />
@@ -44,7 +52,7 @@ export default function App() {
           />
 
           <Route
-            path="/admin/login"
+            path="/admins/login"
             element={
               <PublicOnlyRoute>
                 <AdminLoginPage />
@@ -53,7 +61,7 @@ export default function App() {
           />
 
           <Route
-            path="/owner"
+            path="/owners/dashboard"
             element={
               <ProtectedRoute allowedRoles={['OWNER']}>
                 <OwnerDashboardPage />
@@ -62,7 +70,7 @@ export default function App() {
           />
 
           <Route
-            path="/owner/shops/:shopId"
+            path="/owners/shops/:shopId"
             element={
               <ProtectedRoute allowedRoles={['OWNER']}>
                 <OwnerShopPage />
@@ -71,13 +79,22 @@ export default function App() {
           />
 
           <Route
-            path="/admin"
+            path="/admins/dashboard"
             element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <AdminDashboardPage />
               </ProtectedRoute>
             }
           />
+
+          {/* Keep legacy URLs working for existing bookmarks. */}
+          <Route path="/shops/:shopId" element={<LegacyShopRedirect />} />
+          <Route path="/login" element={<Navigate to="/users/login" replace />} />
+          <Route path="/register" element={<Navigate to="/users/register" replace />} />
+          <Route path="/admin/login" element={<Navigate to="/admins/login" replace />} />
+          <Route path="/owner" element={<Navigate to="/owners/dashboard" replace />} />
+          <Route path="/owner/shops/:shopId" element={<LegacyShopRedirect owner />} />
+          <Route path="/admin" element={<Navigate to="/admins/dashboard" replace />} />
 
           <Route
             path="*"
