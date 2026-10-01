@@ -79,6 +79,13 @@ router.get(
 );
 
 router.get(
+  "/admin/all",
+  authenticate,
+  authorizeRoles("ADMIN"),
+  ShopController.getAdminShops,
+);
+
+router.get(
   "/admin/stats",
   authenticate,
   authorizeRoles("ADMIN"),

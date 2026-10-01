@@ -181,6 +181,15 @@ class ShopController {
     }
   }
 
+  static async getAdminShops(req, res, next) {
+    try {
+      const result = await ShopService.listAdminShops();
+      return res.status(200).json({ success: true, shops: result.shops });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getAdminStats(req, res, next) {
     try {
       const stats = await ShopService.getAdminStats();

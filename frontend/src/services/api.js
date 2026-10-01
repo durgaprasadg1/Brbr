@@ -65,3 +65,7 @@ export async function verifyRegistrationOtp(email, otp) {
     }),
   });
 }
+
+export async function getAdminUsers(role) {
+  return apiRequest(`/auth/admin/users?role=${role}`, { method: "GET" });
+}

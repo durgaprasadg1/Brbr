@@ -75,6 +75,10 @@ export async function getPendingShopRequests() {
   return apiRequest("/shops/admin/requests", { method: "GET" });
 }
 
+export async function getAdminShops() {
+  return apiRequest("/shops/admin/all", { method: "GET" });
+}
+
 export async function getAdminShopStats() {
   return apiRequest("/shops/admin/stats", { method: "GET" });
 }

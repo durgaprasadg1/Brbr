@@ -173,6 +173,16 @@
 .panel-footer button { display: flex; align-items: center; gap: 6px; border: 0; color: #68755e; background: none; font-size: 8px; font-weight: 600; cursor: pointer; }
 .dashboard-footnote { display: flex; align-items: center; gap: 6px; margin-top: 13px; color: #a1a299; font-size: 8px; }
 .section-placeholder { min-height: 65vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; max-width: 480px; margin: 0 auto; }
+.admin-data-section { padding-bottom: 24px; }
+.section-heading { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 22px; }
+.section-heading h1 { margin: 9px 0 5px; font: 700 23px/1.25 'Manrope', sans-serif; letter-spacing: -.8px; color: #2b2d27; }
+.section-heading p { color: #92938c; font-size: 10px; }
+.data-tabs { display: flex; gap: 24px; margin-bottom: 12px; border-bottom: 1px solid #e6e9e3; }
+.data-tabs button { border: 0; border-bottom: 2px solid transparent; padding: 0 0 11px; color: #969a91; background: transparent; font-size: 11px; font-weight: 600; cursor: pointer; }
+.data-tabs button span { margin-left: 5px; color: #a4a99e; font-size: 9px; }
+.data-tabs .data-tab-active { border-bottom-color: #718268; color: #52634a; }
+.data-panel { overflow: hidden; border: 1px solid #edeee9; border-radius: 8px; background: #fff; }
+.data-state { display: grid; min-height: 220px; place-items: center; color: #8c8f88; font-size: 12px; }
 .placeholder-icon { width: 44px; height: 44px; margin-bottom: 21px; display: grid; place-items: center; border-radius: 12px; color: #68785e; background: #edf1e9; }
 .section-placeholder h1 { font-size: 29px; }
 .section-placeholder > p { color: #898b83; font-size: 12px; line-height: 1.7; max-width: 380px; }

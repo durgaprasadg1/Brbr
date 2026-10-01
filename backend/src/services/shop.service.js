@@ -237,6 +237,11 @@ class ShopService {
     return { shops };
   }
 
+  static async listAdminShops() {
+    const shops = await ShopModel.findAllForAdmin();
+    return { shops };
+  }
+
   static async getAdminStats() {
     return ShopModel.getAdminStats();
   }

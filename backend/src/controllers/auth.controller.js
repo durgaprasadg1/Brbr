@@ -1,4 +1,5 @@
 const AuthService = require("../services/auth.service");
+const UserModel = require("../models/user.model");
 const {
   registerSchema,
   verifyOtpSchema,
@@ -115,6 +116,20 @@ class AuthController {
         message: "Current user profile retrieved",
         user: formatUser(req.user),
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getAdminUsers(req, res, next) {
+    try {
+      const role = String(req.query.role || "").trim().toUpperCase();
+      if (!["CUSTOMER", "OWNER"].includes(role)) {
+        return res.status(400).json({ success: false, message: "A valid user role is required." });
+      }
+
+      const users = await UserModel.findAllByRole(role);
+      return res.status(200).json({ success: true, users });
     } catch (error) {
       next(error);
     }

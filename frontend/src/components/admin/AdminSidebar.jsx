@@ -11,7 +11,7 @@ export default function AdminSidebar({ items, active, onNavigate, open, onClose,
         <nav className="sidebar-nav" aria-label="Admin navigation">
           {items.map(({ id, icon: Icon }) => (
             <button key={id} className={`sidebar-link ${active === id ? 'sidebar-link-active' : ''}`} onClick={() => onNavigate(id)}>
-              <Icon size={17} /><span>{id}</span>{id === 'Shops' && <span className="nav-count">8</span>}
+              <Icon size={17} /><span>{id}</span>
             </button>
           ))}
         </nav>

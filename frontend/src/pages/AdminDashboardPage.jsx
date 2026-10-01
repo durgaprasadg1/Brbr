@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Activity, ArrowLeft, ArrowRight, BarChart3, ChevronDown, Clock3, Home, MapPin, Scissors, ShieldCheck, Store, Users, X } from 'lucide-react'
+import { Activity, ArrowLeft, BarChart3, ChevronDown, Clock3, Home, MapPin, Scissors, ShieldCheck, Store, Users, X } from 'lucide-react'
 import AdminSidebar from '../components/admin/AdminSidebar.jsx'
 import AdminTopbar from '../components/admin/AdminTopbar.jsx'
 import StatCard from '../components/admin/StatCard.jsx'
-import { getAdminShopStats, getPendingShopRequests, reviewShopRequest } from '../services/shopApi.js'
+import { getAdminShopStats, getAdminShops, getPendingShopRequests, reviewShopRequest } from '../services/shopApi.js'
+import { getAdminUsers } from '../services/api.js'
 
 const adminNavItems = [
   { id: 'Dashboard', icon: Home },
@@ -24,15 +25,6 @@ const emptyStats = {
 const DashboardOverview = ({ pendingShops, stats, onRefresh, onReview }) => {
   const [showPreviewNotice, setShowPreviewNotice] = useState(true)
   const [notice, setNotice] = useState('')
-
-  useEffect(() => {
-    if (!pendingShops.length) {
-      setNotice('No pending shop submissions right now.')
-      return
-    }
-
-    setNotice('')
-  }, [pendingShops])
 
   const statCards = [
     { icon: Store, label: 'Total shops', value: stats.total_shops, color: 'violet' },
@@ -81,7 +73,7 @@ const DashboardOverview = ({ pendingShops, stats, onRefresh, onReview }) => {
         <div><div className="panel-title-row"><h2>Pending shop approvals</h2><span className="pending-count">{pendingShops.length} pending</span></div><p>Review new shops before they go live on Chairside.</p></div>
       </div>
 
-      {notice && <div className="inline-notice admin-inline-notice">{notice}</div>}
+      {(notice || (!pendingShops.length && 'No pending shop submissions right now.')) && <div className="inline-notice admin-inline-notice">{notice || 'No pending shop submissions right now.'}</div>}
 
       {pendingShops.length === 0 ? (
         <div className="empty-state admin-empty-state">
@@ -139,6 +131,36 @@ const DashboardOverview = ({ pendingShops, stats, onRefresh, onReview }) => {
   </>
 }
 
+const AdminShopsSection = () => {
+  const [shops, setShops] = useState([])
+  const [tab, setTab] = useState('verified')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getAdminShops().then((result) => setShops(result.shops || [])).catch(() => setShops([])).finally(() => setLoading(false))
+  }, [])
+
+  const visibleShops = shops.filter((shop) => tab === 'verified' ? shop.status === 'ACTIVE' : shop.status !== 'ACTIVE')
+
+  return <section className="admin-data-section">
+    <div className="section-heading"><div><div className="eyebrow dashboard-eyebrow">SHOP DIRECTORY</div><h1>Shops</h1><p>Manage verified shops and review shops that are not live yet.</p></div></div>
+    <div className="data-tabs"><button className={tab === 'verified' ? 'data-tab-active' : ''} onClick={() => setTab('verified')}>Verified shops <span>{shops.filter((shop) => shop.status === 'ACTIVE').length}</span></button><button className={tab === 'unverified' ? 'data-tab-active' : ''} onClick={() => setTab('unverified')}>Unverified shops <span>{shops.filter((shop) => shop.status !== 'ACTIVE').length}</span></button></div>
+    <div className="data-panel">{loading ? <div className="data-state">Loading shops...</div> : visibleShops.length === 0 ? <div className="data-state">No {tab} shops found.</div> : <div className="shop-table-wrap"><table className="shop-table"><thead><tr><th>SHOP</th><th>OWNER</th><th>LOCATION</th><th>CREATED</th><th>STATUS</th></tr></thead><tbody>{visibleShops.map((shop) => <tr key={shop.id}><td><div className="shop-name-cell"><span className="shop-avatar green">{shop.name.slice(0, 2).toUpperCase()}</span><strong>{shop.name}</strong></div></td><td><div className="shop-owner-info"><strong>{shop.owner_name}</strong><small>{shop.owner_email}</small></div></td><td><div className="shop-meta-row"><MapPin size={12} /> {shop.address}</div></td><td className="submitted-time">{new Date(shop.created_at).toLocaleDateString('en-IN')}</td><td><span className={`status-pill ${shop.status === 'ACTIVE' ? 'status-active' : 'status-waiting'}`}><span /> {shop.status === 'ACTIVE' ? 'Verified' : shop.status === 'PENDING' ? 'Pending review' : 'Rejected'}</span></td></tr>)}</tbody></table></div>}</div>
+  </section>
+}
+
+const AdminUsersSection = ({ role }) => {
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const title = role === 'CUSTOMER' ? 'Customers' : 'Owners'
+
+  useEffect(() => {
+    getAdminUsers(role).then((result) => setUsers(result.users || [])).catch(() => setUsers([])).finally(() => setLoading(false))
+  }, [role])
+
+  return <section className="admin-data-section"><div className="section-heading"><div><div className="eyebrow dashboard-eyebrow">USER DIRECTORY</div><h1>{title}</h1><p>All registered {title.toLowerCase()} from the current database.</p></div></div><div className="data-panel">{loading ? <div className="data-state">Loading {title.toLowerCase()}...</div> : users.length === 0 ? <div className="data-state">No {title.toLowerCase()} found.</div> : <div className="shop-table-wrap"><table className="shop-table"><thead><tr><th>NAME</th><th>EMAIL</th><th>PHONE</th><th>JOINED</th><th>STATUS</th></tr></thead><tbody>{users.map((user) => <tr key={user.id}><td><div className="shop-name-cell"><span className="shop-avatar blue">{user.name.slice(0, 2).toUpperCase()}</span><strong>{user.name}</strong></div></td><td>{user.email}</td><td>{user.phone || 'Not provided'}</td><td className="submitted-time">{new Date(user.created_at).toLocaleDateString('en-IN')}</td><td><span className={`status-pill ${user.is_active ? 'status-active' : 'status-waiting'}`}><span /> {user.is_active ? 'Active' : 'Inactive'}</span></td></tr>)}</tbody></table></div>}</div></section>
+}
+
 const AdminSectionPlaceholder = ({ active, onBack }) => {
   const Icon = adminNavItems.find((item) => item.id === active)?.icon || Activity
 
@@ -162,7 +184,7 @@ export default function AdminDashboardPage() {
     try {
       const result = await getPendingShopRequests()
       setPendingShops(result.shops || [])
-    } catch (error) {
+    } catch {
       setPendingShops([])
     }
   }
@@ -171,14 +193,19 @@ export default function AdminDashboardPage() {
     try {
       const result = await getAdminShopStats()
       setStats({ ...emptyStats, ...(result.stats || {}) })
-    } catch (error) {
+    } catch {
       setStats(emptyStats)
     }
   }
 
   useEffect(() => {
-    fetchPendingShops()
-    fetchAdminStats()
+    Promise.all([getPendingShopRequests(), getAdminShopStats()]).then(([pendingResult, statsResult]) => {
+      setPendingShops(pendingResult.shops || [])
+      setStats({ ...emptyStats, ...(statsResult.stats || {}) })
+    }).catch(() => {
+      setPendingShops([])
+      setStats(emptyStats)
+    })
   }, [])
 
   const navigateSection = (section) => {
@@ -197,9 +224,11 @@ export default function AdminDashboardPage() {
       <section className="admin-main">
         <AdminTopbar active={active} onMenuOpen={() => setSidebarOpen(true)} />
         <div className="dashboard-content">
-          {active === 'Dashboard'
-            ? <DashboardOverview pendingShops={pendingShops} stats={stats} onRefresh={async () => { await fetchPendingShops(); await fetchAdminStats() }} onReview={handleReview} />
-            : <AdminSectionPlaceholder active={active} onBack={() => setActive('Dashboard')} />}
+          {active === 'Dashboard' ? <DashboardOverview pendingShops={pendingShops} stats={stats} onRefresh={async () => { await fetchPendingShops(); await fetchAdminStats() }} onReview={handleReview} />
+            : active === 'Shops' ? <AdminShopsSection />
+              : active === 'Customers' ? <AdminUsersSection role="CUSTOMER" />
+                : active === 'Owners' ? <AdminUsersSection role="OWNER" />
+                  : <AdminSectionPlaceholder active={active} onBack={() => setActive('Dashboard')} />}
         </div>
       </section>
     </main>

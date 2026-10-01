@@ -219,6 +219,17 @@ class ShopModel {
     return rows;
   }
 
+  static async findAllForAdmin() {
+    const [rows] = await pool.execute(
+      `SELECT s.*, u.name AS owner_name, u.email AS owner_email
+       FROM shops s
+       INNER JOIN users u ON u.id = s.owner_id
+       WHERE s.is_deleted = FALSE
+       ORDER BY s.created_at DESC`,
+    );
+    return rows;
+  }
+
   static async getAdminStats() {
     const [rows] = await pool.execute(
       `SELECT

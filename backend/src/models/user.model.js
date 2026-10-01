@@ -33,6 +33,17 @@ class UserModel {
     return rows.length > 0 ? rows[0] : null;
   }
 
+  static async findAllByRole(role) {
+    const [rows] = await pool.execute(
+      `SELECT id, name, email, phone, role, is_verified, is_active, created_at, updated_at
+       FROM users
+       WHERE role = ? AND is_deleted = FALSE
+       ORDER BY created_at DESC`,
+      [role],
+    );
+    return rows;
+  }
+
   /**
    * Find a user by phone number
    * @param {string} phone
